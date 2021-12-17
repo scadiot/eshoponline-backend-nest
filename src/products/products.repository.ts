@@ -20,7 +20,7 @@ export class ProductsRepository extends Repository<Product> {
 
   async getProductBySlug(slug: string): Promise<Product> {
     const query = this.createQueryBuilder('product');
-    query.where("product.slug = :slug", { slug });
+    query.where('product.slug = :slug', { slug });
     //query.leftJoinAndSelect('product.categories', 'categories')
 
     try {

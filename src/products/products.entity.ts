@@ -8,7 +8,7 @@ import {
   JoinTable,
 } from 'typeorm';
 
-import { Category } from '../categories/categories.entity'
+import { Category } from '../categories/categories.entity';
 
 @Entity()
 export class Product {
@@ -33,7 +33,7 @@ export class Product {
   @UpdateDateColumn()
   updateDate: Date;
 
-  @ManyToMany(type => Category)
+  @ManyToMany(() => Category)
   @JoinTable({ name: 'products_categories' })
   categories: Category[];
 }

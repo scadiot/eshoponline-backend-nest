@@ -34,11 +34,13 @@ export class ProductsService {
 
   async getProductBySlut(slut: string): Promise<ProductDto> {
     const product = await this.productsRepository.getProductBySlug(slut);
-    const categories = await this.categoriesRepository.getCategoriesByProduct(product.id);
-  
+    const categories = await this.categoriesRepository.getCategoriesByProduct(
+      product.id,
+    );
+
     return {
       ...product,
-      categoriesIds: categories.map(c => c.id),
+      categoriesIds: categories.map((c) => c.id),
     };
   }
 
@@ -62,7 +64,7 @@ export class ProductsService {
     categoryMotos.slug = 'les_motos';
     categoryMotos.parent = categoryVehicle;
     await this.categoriesRepository.save(categoryMotos);
-  
+
     const newProduct = {
       name: 'velo',
       slug: 'velo',
@@ -70,9 +72,7 @@ export class ProductsService {
       description: 'un velo vraiment très joli',
       createDate: new Date(),
       updateDate: new Date(),
-      categories: [
-        categoryVehicle, categoryVelos
-      ]
+      categories: [categoryVehicle, categoryVelos],
     };
     await this.productsRepository.save(newProduct);
   }

@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   Column,
   Entity,
@@ -12,24 +13,31 @@ import { Category } from '../categories/categories.entity';
 
 @Entity()
 export class Product {
+  @ApiProperty()
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
+  @ApiProperty()
   @Column('varchar', { length: 200 })
   name: string;
 
+  @ApiProperty()
   @Column('varchar', { length: 200 })
   slug: string;
 
+  @ApiProperty()
   @Column('varchar', { length: 300 })
   summary: string;
 
+  @ApiProperty()
   @Column('varchar', { length: 2000 })
   description: string;
 
+  @ApiProperty()
   @CreateDateColumn()
   createDate: Date;
 
+  @ApiProperty()
   @UpdateDateColumn()
   updateDate: Date;
 

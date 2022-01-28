@@ -6,6 +6,10 @@ import { ProductsRepository } from './products.repository';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ProductDto } from './products.dto';
 
+export interface getProductsOptions {
+  categoryId?: number;
+}
+
 @Injectable()
 export class ProductsService {
   constructor(
@@ -14,8 +18,12 @@ export class ProductsService {
     private categoriesRepository: CategoriesRepository,
   ) {}
 
-  async getProducts(): Promise<Product[]> {
-    return this.productsRepository.getProducts();
+  async getProducts(options: getProductsOptions): Promise<Product[]> {
+    if (options.categoryId) {
+      return this.productsRepository.getProductsByCategory(options.categoryId);
+    } else {
+      return this.productsRepository.getProducts();
+    }
     //return [
     //  {
     //    id: 'xxxxx',
@@ -75,5 +83,27 @@ export class ProductsService {
       categories: [categoryVehicle, categoryVelos],
     };
     await this.productsRepository.save(newProduct);
+
+    const newProduct2 = {
+      name: 'velo2',
+      slug: 'velo2',
+      summary: 'un joli velo2',
+      description: 'un velo vraiment très joli2',
+      createDate: new Date(),
+      updateDate: new Date(),
+      categories: [categoryVehicle, categoryVelos],
+    };
+    await this.productsRepository.save(newProduct2);
+
+    const newProduct3 = {
+      name: 'velo3',
+      slug: 'velo3',
+      summary: 'un joli velo3',
+      description: 'un velo vraiment très joli3',
+      createDate: new Date(),
+      updateDate: new Date(),
+      categories: [categoryVehicle],
+    };
+    await this.productsRepository.save(newProduct3);
   }
 }

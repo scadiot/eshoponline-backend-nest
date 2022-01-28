@@ -1,8 +1,8 @@
-import { Controller, Get, Param } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { Product } from './products.entity';
 import { ProductDto } from './products.dto';
-import { ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import { ApiCreatedResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
 
 @ApiTags('Products')
 @Controller('products')
@@ -14,8 +14,15 @@ export class ProductsController {
     description: 'All products.',
     type: [Product],
   })
-  getProducts(): Promise<Product[]> {
-    return this.productsService.getProducts();
+  @ApiQuery({
+    name: 'category',
+    required: false,
+    type: String,
+  })
+  getProducts(@Query('category') categoryId?: number): Promise<Product[]> {
+    return this.productsService.getProducts({
+      categoryId: categoryId,
+    });
   }
 
   @Get('slut/:slut')

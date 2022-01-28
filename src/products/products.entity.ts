@@ -14,8 +14,8 @@ import { Category } from '../categories/categories.entity';
 @Entity()
 export class Product {
   @ApiProperty()
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @ApiProperty()
   @Column('varchar', { length: 200 })

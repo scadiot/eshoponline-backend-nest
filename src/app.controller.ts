@@ -3,6 +3,14 @@ import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
+import { ApiCreatedResponse, ApiBody, ApiProperty } from '@nestjs/swagger';
+
+export class LoginDto {
+  @ApiProperty()
+  username: string;
+  @ApiProperty()
+  password: string;
+}
 
 @Controller()
 export class AppController {
@@ -18,6 +26,9 @@ export class AppController {
 
   @UseGuards(LocalAuthGuard)
   @Post('auth/login')
+  @ApiBody({
+    type: LoginDto,
+  })
   async login(@Request() req) {
     return this.authService.login(req.user);
   }

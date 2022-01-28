@@ -18,6 +18,33 @@ export class ProductsRepository extends Repository<Product> {
     }
   }
 
+  async getProductsByCategory(categoryId: number): Promise<Product[]> {
+    try {
+      return this.createQueryBuilder('product')
+        .innerJoin(
+          'product.categories',
+          'category',
+          'category.id = :categoryId',
+          { categoryId },
+        )
+        .getMany();
+
+      //return this.find({
+      //  where: [
+      //    {
+      //      categories: {
+      //        id: categoryId,
+      //      },
+      //    },
+      //  ],
+      //  relations: ['categories'],
+      //});
+    } catch (error) {
+      this.logger.error(`Failed to get product`, error.stack);
+      throw new InternalServerErrorException();
+    }
+  }
+
   async getProductBySlug(slug: string): Promise<Product> {
     const query = this.createQueryBuilder('product');
     query.where('product.slug = :slug', { slug });

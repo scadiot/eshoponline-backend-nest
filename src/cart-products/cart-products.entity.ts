@@ -14,7 +14,7 @@ import { Product } from '../products/products.entity';
 import { User } from '../users/users.entity';
 
 @Entity()
-export class CartProducts {
+export class CartProduct {
   @PrimaryGeneratedColumn()
   id: number;
 

@@ -23,10 +23,10 @@ export class UsersService {
     return user ? this.mapToUserDto(user) : undefined;
   }
 
-  async validPassword(email: string, password: string): Promise<UserDto> {
+  async validPassword(email: string, password: string): Promise<User> {
     const user = await this.usersRepository.getUserByMail(email);
     if (user && user.password === password) {
-      return this.mapToUserDto(user);
+      return user;
     }
     return null;
   }

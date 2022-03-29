@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
 import { Product } from './products.entity';
-import { Category } from '../categories/categories.entity';
 import { CategoriesRepository } from '../categories/categories.repository';
+import { KeywordsRepository } from '../keywords/keywords.repository';
 import { ProductsRepository } from './products.repository';
 import { InjectRepository } from '@nestjs/typeorm';
-import { ProductDto } from './products.dto';
+import { ProductDto, CreateProductDto } from './products.dto';
 
 export interface getProductsOptions {
   categoryId?: number;
@@ -15,95 +15,89 @@ export class ProductsService {
   constructor(
     @InjectRepository(ProductsRepository)
     private productsRepository: ProductsRepository,
+    @InjectRepository(CategoriesRepository)
     private categoriesRepository: CategoriesRepository,
+    @InjectRepository(KeywordsRepository)
+    private keywordsRepository: KeywordsRepository,
   ) {}
 
-  async getProducts(options: getProductsOptions): Promise<Product[]> {
+  async getProducts(options: getProductsOptions): Promise<ProductDto[]> {
+    let products;
     if (options.categoryId) {
-      return this.productsRepository.getProductsByCategory(options.categoryId);
+      products = await this.productsRepository.getProductsByCategory(
+        options.categoryId,
+      );
     } else {
-      return this.productsRepository.getProducts();
+      products = await this.productsRepository.getProducts();
     }
-    //return [
-    //  {
-    //    id: 'xxxxx',
-    //    name: 'velo',
-    //    slug: 'velo',
-    //    summary: 'un joli velo',
-    //    description: 'un velo vraiment très joli',
-    //    createDate: new Date(),
-    //    updateDate: new Date(),
-    //    categories: [
-    //      { name: 'vélo', slug: 'velos', description: 'les vélos', }
-    //    ]
-    //  },
-    //];
+    return this.mapArrayToProductDto(products);
   }
 
   async getProductBySlut(slut: string): Promise<ProductDto> {
     const product = await this.productsRepository.getProductBySlug(slut);
-    const categories = await this.categoriesRepository.getCategoriesByProduct(
+    product.categories = await this.categoriesRepository.getCategoriesByProduct(
       product.id,
     );
 
-    return {
-      ...product,
-      categoriesIds: categories.map((c) => c.id),
-    };
+    return this.mapToProductDto(product);
   }
 
-  async addProduct(): Promise<void> {
-    const categoryVehicle = new Category();
-    categoryVehicle.name = 'Véhicules';
-    categoryVehicle.description = 'Les machins qui roulent';
-    categoryVehicle.slug = 'vehicules';
-    await this.categoriesRepository.save(categoryVehicle);
+  async addProduct(productParam: CreateProductDto): Promise<ProductDto> {
+    const categories = await this.categoriesRepository.findByIds(
+      productParam.categories,
+    );
 
-    const categoryVelos = new Category();
-    categoryVelos.name = 'Les vélos';
-    categoryVelos.description = 'Les vélos';
-    categoryVelos.slug = 'les_velo';
-    categoryVelos.parent = categoryVehicle;
-    await this.categoriesRepository.save(categoryVelos);
-
-    const categoryMotos = new Category();
-    categoryMotos.name = 'Les motos';
-    categoryMotos.description = 'Les motos';
-    categoryMotos.slug = 'les_motos';
-    categoryMotos.parent = categoryVehicle;
-    await this.categoriesRepository.save(categoryMotos);
+    const keywords = await this.keywordsRepository.getAndCreateKeywords(
+      productParam.keywords,
+    );
 
     const newProduct = {
-      name: 'velo',
-      slug: 'velo',
-      summary: 'un joli velo',
-      description: 'un velo vraiment très joli',
+      ...productParam,
       createDate: new Date(),
       updateDate: new Date(),
-      categories: [categoryVehicle, categoryVelos],
+      categories,
+      keywords,
     };
-    await this.productsRepository.save(newProduct);
 
-    const newProduct2 = {
-      name: 'velo2',
-      slug: 'velo2',
-      summary: 'un joli velo2',
-      description: 'un velo vraiment très joli2',
-      createDate: new Date(),
-      updateDate: new Date(),
-      categories: [categoryVehicle, categoryVelos],
-    };
-    await this.productsRepository.save(newProduct2);
+    const product = await this.productsRepository.save(newProduct);
+    return this.mapToProductDto(product);
+  }
 
-    const newProduct3 = {
-      name: 'velo3',
-      slug: 'velo3',
-      summary: 'un joli velo3',
-      description: 'un velo vraiment très joli3',
+  async updateProduct(productParam: ProductDto): Promise<ProductDto> {
+    const categories = await this.categoriesRepository
+      .createQueryBuilder('cat')
+      .where('cat.id IN (:...categories)', {
+        categories: productParam.categories,
+      })
+      .select('cat.id')
+      .getMany();
+
+    const keywords = await this.keywordsRepository.getAndCreateKeywords(
+      productParam.keywords,
+    );
+
+    const product: Product = {
+      ...productParam,
       createDate: new Date(),
       updateDate: new Date(),
-      categories: [categoryVehicle],
+      categories,
+      keywords,
     };
-    await this.productsRepository.save(newProduct3);
+
+    await this.productsRepository.save(product);
+    return this.mapToProductDto(product);
+  }
+
+  async mapToProductDto(product: Product): Promise<ProductDto> {
+    const productDto = {
+      ...product,
+      categories: product.categories.map((c) => c.id),
+      keywords: product.keywords.map((c) => c.word),
+    };
+    return productDto;
+  }
+
+  async mapArrayToProductDto(products: Product[]): Promise<ProductDto[]> {
+    return Promise.all(products.map(async (p) => this.mapToProductDto(p)));
   }
 }

@@ -22,4 +22,14 @@ export class CategoriesRepository extends Repository<Category> {
 
     return await query.getMany();
   }
+
+  async getExistingCatgories(categoryIds: number[]) {
+    const query = this.createQueryBuilder('c')
+      .select('c.id')
+      .andWhere('c.id IN (:categoryIds)', {
+        categoryIds,
+      });
+
+    return await query.getMany();
+  }
 }

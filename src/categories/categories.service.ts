@@ -1,4 +1,5 @@
 import { Injectable } from '@nestjs/common';
+import { CreateCategoryDto } from './categories.dto';
 import { Category } from '../categories/categories.entity';
 import { CategoriesRepository } from '../categories/categories.repository';
 import { InjectRepository } from '@nestjs/typeorm';
@@ -12,5 +13,9 @@ export class CategoriesService {
 
   async getCategories(): Promise<Category[]> {
     return this.categoriesRepository.getCategories();
+  }
+
+  addCategory(newCategory: CreateCategoryDto): Promise<Category> {
+    return this.categoriesRepository.save(newCategory);
   }
 }

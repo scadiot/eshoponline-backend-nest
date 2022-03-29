@@ -1,8 +1,19 @@
-import { Controller, Get, Param, Query } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Patch,
+  Param,
+  Query,
+  Body,
+  UseGuards,
+} from '@nestjs/common';
 import { ProductsService } from './products.service';
-import { Product } from './products.entity';
-import { ProductDto } from './products.dto';
+import { ProductDto, CreateProductDto } from './products.dto';
 import { ApiCreatedResponse, ApiTags, ApiQuery } from '@nestjs/swagger';
+import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { Roles } from '../auth/roles.decorator';
+import { RolesGuard } from '../auth/roles.guard';
 
 @ApiTags('Products')
 @Controller('products')
@@ -12,14 +23,16 @@ export class ProductsController {
   @Get()
   @ApiCreatedResponse({
     description: 'All products.',
-    type: [Product],
+    type: [ProductDto],
   })
   @ApiQuery({
     name: 'category',
     required: false,
     type: String,
   })
-  getProducts(@Query('category') categoryId?: number): Promise<Product[]> {
+  async getProducts(
+    @Query('category') categoryId?: number,
+  ): Promise<ProductDto[]> {
     return this.productsService.getProducts({
       categoryId: categoryId,
     });
@@ -30,13 +43,23 @@ export class ProductsController {
     description: 'Product by slut.',
     type: ProductDto,
   })
-  getProductBySlut(@Param('slut') slut: string): Promise<ProductDto> {
+  async getProductBySlut(@Param('slut') slut: string): Promise<ProductDto> {
     return this.productsService.getProductBySlut(slut);
   }
 
-  @Get('add')
-  async addProducts(): Promise<string> {
-    this.productsService.addProduct();
-    return 'done';
+  @UseGuards(JwtAuthGuard, RolesGuard)
+  @Roles('admin')
+  @Post()
+  async addProducts(
+    @Body() productParam: CreateProductDto,
+  ): Promise<ProductDto> {
+    return this.productsService.addProduct(productParam);
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Roles('admin')
+  @Patch()
+  async updateProducts(@Body() productParam: ProductDto): Promise<ProductDto> {
+    return this.productsService.updateProduct(productParam);
   }
 }

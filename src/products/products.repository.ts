@@ -28,17 +28,6 @@ export class ProductsRepository extends Repository<Product> {
           { categoryId },
         )
         .getMany();
-
-      //return this.find({
-      //  where: [
-      //    {
-      //      categories: {
-      //        id: categoryId,
-      //      },
-      //    },
-      //  ],
-      //  relations: ['categories'],
-      //});
     } catch (error) {
       this.logger.error(`Failed to get product`, error.stack);
       throw new InternalServerErrorException();

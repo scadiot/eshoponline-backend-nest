@@ -1,21 +1,25 @@
-import { Controller, Post, Body } from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch } from '@nestjs/common';
 import { UsersService } from './users.service';
-import { User } from './users.entity';
 import { CreateUserDto, UserDto } from './users.dto';
-import { ApiCreatedResponse, ApiTags, ApiBody } from '@nestjs/swagger';
+import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Users')
 @Controller('users')
 export class UsersController {
   constructor(private usersService: UsersService) {}
 
+  @Get()
+  async getUsers(): Promise<UserDto[]> {
+    return await this.usersService.getAll();
+  }
+
   @Post()
-  async addUsers(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
-    const user = new User();
-    user.email = createUserDto.email;
-    user.password = createUserDto.password;
-    await this.usersService.create(user);
-    user.password = undefined;
-    return user;
+  async addUser(@Body() createUserDto: CreateUserDto): Promise<UserDto> {
+    return await this.usersService.create(createUserDto);
+  }
+
+  @Patch()
+  async updateUser(@Body() updateUserDto: UserDto): Promise<UserDto> {
+    return await this.usersService.update(updateUserDto);
   }
 }

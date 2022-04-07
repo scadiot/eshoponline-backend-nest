@@ -1,4 +1,12 @@
-import { Column, Entity, PrimaryGeneratedColumn, Index } from 'typeorm';
+import {
+  Column,
+  Entity,
+  PrimaryGeneratedColumn,
+  Index,
+  ManyToMany,
+  JoinTable,
+} from 'typeorm';
+import { Product } from '../products/products.entity';
 
 @Entity()
 export class Keyword {
@@ -8,4 +16,8 @@ export class Keyword {
   @Column('varchar', { length: 50 })
   @Index()
   word: string;
+
+  @ManyToMany(() => Product)
+  @JoinTable({ name: 'products_keywords' })
+  products: Product[];
 }

@@ -13,4 +13,14 @@ export class KeywordsRepository extends Repository<Keyword> {
       ),
     );
   }
+
+  async getKeywordsByProduct(productId: number): Promise<Keyword[]> {
+    const query = this.createQueryBuilder('k')
+      .leftJoin('k.products', 'p')
+      .andWhere('p.id = :productId', {
+        productId,
+      });
+
+    return await query.getMany();
+  }
 }

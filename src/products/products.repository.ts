@@ -7,15 +7,7 @@ export class ProductsRepository extends Repository<Product> {
   private logger = new Logger('ProductsRepository');
 
   async getProducts(): Promise<Product[]> {
-    const query = this.createQueryBuilder('product');
-
-    try {
-      const products = await query.getMany();
-      return products;
-    } catch (error) {
-      this.logger.error(`Failed to get product`, error.stack);
-      throw new InternalServerErrorException();
-    }
+    return await this.find();
   }
 
   async getProductsByCategory(categoryId: number): Promise<Product[]> {

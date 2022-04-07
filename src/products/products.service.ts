@@ -30,16 +30,31 @@ export class ProductsService {
     } else {
       products = await this.productsRepository.getProducts();
     }
-    return this.mapArrayToProductDto(products);
+    return ProductsService.mapArrayToProductDto(products);
   }
 
-  async getProductBySlut(slut: string): Promise<ProductDto> {
-    const product = await this.productsRepository.getProductBySlug(slut);
+  async getProductById(id: number): Promise<ProductDto> {
+    const product = await this.productsRepository.findOne({ id });
     product.categories = await this.categoriesRepository.getCategoriesByProduct(
       product.id,
     );
+    product.keywords = await this.keywordsRepository.getKeywordsByProduct(
+      product.id,
+    );
 
-    return this.mapToProductDto(product);
+    return ProductsService.mapToProductDto(product);
+  }
+
+  async getProductBySlug(slug: string): Promise<ProductDto> {
+    const product = await this.productsRepository.getProductBySlug(slug);
+    product.categories = await this.categoriesRepository.getCategoriesByProduct(
+      product.id,
+    );
+    product.keywords = await this.keywordsRepository.getKeywordsByProduct(
+      product.id,
+    );
+
+    return ProductsService.mapToProductDto(product);
   }
 
   async addProduct(productParam: CreateProductDto): Promise<ProductDto> {
@@ -60,7 +75,7 @@ export class ProductsService {
     };
 
     const product = await this.productsRepository.save(newProduct);
-    return this.mapToProductDto(product);
+    return ProductsService.mapToProductDto(product);
   }
 
   async updateProduct(productParam: ProductDto): Promise<ProductDto> {
@@ -85,19 +100,29 @@ export class ProductsService {
     };
 
     await this.productsRepository.save(product);
-    return this.mapToProductDto(product);
+    return ProductsService.mapToProductDto(product);
   }
 
-  async mapToProductDto(product: Product): Promise<ProductDto> {
+  static async mapToProductDto(product: Product): Promise<ProductDto> {
+    const categories = product.categories
+      ? product.categories.map((c) => c.id)
+      : null;
+
+    const keywords = product.keywords
+      ? product.keywords.map((c) => c.word)
+      : null;
+
     const productDto = {
       ...product,
-      categories: product.categories.map((c) => c.id),
-      keywords: product.keywords.map((c) => c.word),
+      categories,
+      keywords,
     };
     return productDto;
   }
 
-  async mapArrayToProductDto(products: Product[]): Promise<ProductDto[]> {
+  static async mapArrayToProductDto(
+    products: Product[],
+  ): Promise<ProductDto[]> {
     return Promise.all(products.map(async (p) => this.mapToProductDto(p)));
   }
 }

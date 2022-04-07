@@ -3,8 +3,8 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Cart products')
-@Controller('cart-products')
-export class CartProductsController {
+@Controller('api/cart-products')
+export class CartProductsApiController {
   @UseGuards(JwtAuthGuard)
   @Get()
   getProfile(@Request() req): string {

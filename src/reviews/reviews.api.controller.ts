@@ -5,6 +5,6 @@ import { Review } from './reviews.entity';
 
 @ApiTags('Reviews')
 @Controller('reviews')
-export class ReviewsController {
+export class ReviewsApiController {
   constructor(private rolesService: ReviewsService) {}
 }

@@ -1,9 +1,10 @@
-import { Controller, Get, Post, Request, UseGuards } from '@nestjs/common';
+import { Controller, Get, Post, Req, Request, Res, UseGuards } from '@nestjs/common';
 import { JwtAuthGuard } from './auth/jwt-auth.guard';
 import { AppService } from './app.service';
 import { LocalAuthGuard } from './auth/local-auth.guard';
 import { AuthService } from './auth/auth.service';
 import { ApiCreatedResponse, ApiBody, ApiProperty } from '@nestjs/swagger';
+import { JwtService } from '@nestjs/jwt';
 
 export class LoginDto {
   @ApiProperty()
@@ -12,11 +13,11 @@ export class LoginDto {
   password: string;
 }
 
-@Controller()
+@Controller('api')
 export class AppController {
   constructor(
     private readonly appService: AppService,
-    private authService: AuthService,
+    private authService: AuthService
   ) {}
 
   @Get()
@@ -37,5 +38,28 @@ export class AppController {
   @Get('profile')
   getProfile(@Request() req) {
     return req.user;
+  }
+
+  @Get('login')
+  loginHttp(@Res() response) {
+    // Do username+password check here.
+    const userId = 'dummy';
+
+    //const payload = { userId: userId };
+    //const token = this.jwtService.sign(payload);
+
+    response
+      .cookie('access_token', 'coucou', {
+        httpOnly: true,
+        domain: 'localhost', // your domain here!
+        expires: new Date(Date.now() + 1000 * 60 * 60 * 24),
+      })
+      .send({ success: true });
+  }
+
+  @Get('toto')
+  findAll(@Req() request) {
+    console.log(request.cookies); // or "request.cookies['cookieKey']"
+    // or console.log(request.signedCookies);
   }
 }

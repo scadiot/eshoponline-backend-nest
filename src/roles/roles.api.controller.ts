@@ -4,8 +4,8 @@ import { RolesService } from './roles.service';
 import { Role } from './roles.entity';
 
 @ApiTags('Roles')
-@Controller('roles')
-export class RolesController {
+@Controller('api/roles')
+export class RolesApiController {
   constructor(private rolesService: RolesService) {}
 
   @Get()

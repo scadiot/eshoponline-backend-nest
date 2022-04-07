@@ -1,0 +1,11 @@
+{{#> layout}}
+  {{#*inline "content"}}
+    <div>
+      <ul>
+      {{#each products}}
+        <li><a href='../product/{{this.slug}}'>{{this.name}} - {{this.slug}}</a></li>
+      {{/each}}
+      </ul>   
+    </div>
+  {{/inline}}
+{{/layout}}

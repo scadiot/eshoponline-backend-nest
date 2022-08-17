@@ -10,18 +10,33 @@ export class AuthService {
     private jwtService: JwtService,
   ) {}
 
-  async validateUser(email: string, password: string): Promise<any> {
-    return await this.usersService.validPassword(email, password);
+  async login(user: User) {
+    return {
+      access_token: this.createToken(user),
+    };
   }
 
-  async login(user: User) {
+  async createToken(user: User) {
     const payload = {
       email: user.email,
       userId: user.id,
       roles: user.roles ? user.roles.map((r) => r.tag) : [],
     };
-    return {
-      access_token: this.jwtService.sign(payload),
-    };
+    return this.jwtService.sign(payload);
+  }
+
+  async validateAndCreateToken(
+    email: string,
+    password: string,
+  ): Promise<string> {
+    const user = await this.usersService.validPassword(email, password);
+    if (!user) {
+      return;
+    }
+    return this.createToken(user);
+  }
+
+  decode(token: string): any {
+    return this.jwtService.decode(token);
   }
 }

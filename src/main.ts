@@ -6,12 +6,7 @@ import * as cookieParser from 'cookie-parser';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
-async function bootstrap() {
-  const app = await NestFactory.create<NestExpressApplication>(AppModule);
-  app.setBaseViewsDir(join(__dirname, '..', 'views'));
-  app.setViewEngine('hbs');
-  app.use(cookieParser());
-  hbs.registerPartials(join(__dirname, '..', 'views/partials'));
+async function initSwagger(app: NestExpressApplication) {
   const config = new DocumentBuilder()
     .setTitle('eshoponline')
     .setDescription('The eshop API description')
@@ -22,8 +17,19 @@ async function bootstrap() {
       'access-token',
     )
     .build();
+
   const document = SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('doc', app, document);
+}
+
+async function bootstrap() {
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+  app.setBaseViewsDir(join(__dirname, '..', 'views'));
+  app.setViewEngine('hbs');
+  hbs.registerPartials(join(__dirname, '..', 'views/partials'));
+  app.use(cookieParser());
+
+  initSwagger(app);
 
   await app.listen(3000);
 }

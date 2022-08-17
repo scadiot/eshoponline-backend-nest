@@ -1,9 +1,17 @@
-import { Controller, Get, Render, Param } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Render,
+  Param,
+  UseInterceptors,
+} from '@nestjs/common';
 import { CategoriesService } from './categories.service';
 import { ApiExcludeController } from '@nestjs/swagger';
+import { ViewdataInterceptor } from '../viewdata/viewdata.interceptor';
 
 @ApiExcludeController()
 @Controller('category')
+@UseInterceptors(ViewdataInterceptor)
 export class CategoriesController {
   constructor(private categoriesService: CategoriesService) {}
 

@@ -1,0 +1,16 @@
+{{#> layout}}
+  {{#*inline "content"}}
+    <div>
+      {{#if success}}
+        <h1>login ok</h1>
+      {{else}}
+        <h1>login</h1>
+        <form action="/auth" method="post" class="form-example">
+          <input type="text" name="email" value="toto@toto.fr" />
+          <input type="text" name="password" value="bim" />
+          <button type="submit">Valider</button>
+        </form>
+      {{/if}}
+    </div>
+  {{/inline}}
+{{/layout}}

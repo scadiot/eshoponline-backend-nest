@@ -20,6 +20,10 @@ export class CategoriesService {
     return this.categoriesRepository.getCategories();
   }
 
+  getRootsCategories(): Promise<Category[]> {
+    return this.categoriesRepository.find({ parentId: null });
+  }
+
   addCategory(newCategory: CreateCategoryDto): Promise<Category> {
     return this.categoriesRepository.save(newCategory);
   }

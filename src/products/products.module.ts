@@ -6,7 +6,7 @@ import { ProductsRepository } from './products.repository';
 import { CategoriesRepository } from '../categories/categories.repository';
 import { KeywordsRepository } from '../keywords/keywords.repository';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { ViewdataInterceptor } from '../viewdata.interceptor';
+import { ViewdataInterceptor } from '../viewdata/viewdata.interceptor';
 
 @Module({
   imports: [

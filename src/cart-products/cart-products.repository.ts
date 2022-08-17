@@ -7,13 +7,22 @@ import { Product } from 'src/products/products.entity';
 export class CartProductsRepository extends Repository<CartProduct> {
   private logger = new Logger('CartProductsRepository');
 
-  async getCategoriesByProduct(productId: number): Promise<CartProduct[]> {
-    const query = this.createQueryBuilder('c')
-      .leftJoin('c.products', 'p')
-      .andWhere('p.id = :productId', {
-        productId,
+  async getProductsByUser(userId: number): Promise<CartProduct[]> {
+    const query = this.createQueryBuilder('cp')
+      .leftJoinAndSelect('cp.product', 'product')
+      .andWhere('cp.userId = :userId', {
+        userId,
       });
 
     return await query.getMany();
+  }
+
+  async clearByUser(userId: number) {
+    const cartProducts = await this.createQueryBuilder('cp')
+      .andWhere('cp.userId = :userId', {
+        userId,
+      })
+      .getMany();
+    this.remove(cartProducts);
   }
 }

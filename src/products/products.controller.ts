@@ -7,7 +7,7 @@ import {
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { ApiExcludeController } from '@nestjs/swagger';
-import { ViewdataInterceptor } from '../viewdata.interceptor';
+import { ViewdataInterceptor } from '../viewdata/viewdata.interceptor';
 
 @ApiExcludeController()
 @Controller('product')

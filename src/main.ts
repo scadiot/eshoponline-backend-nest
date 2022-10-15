@@ -28,9 +28,9 @@ async function bootstrap() {
   app.setViewEngine('hbs');
   hbs.registerPartials(join(__dirname, '..', 'views/partials'));
   app.use(cookieParser());
-
+  app.enableCors();
   initSwagger(app);
 
-  await app.listen(3000);
+  await app.listen(3001);
 }
 bootstrap();
